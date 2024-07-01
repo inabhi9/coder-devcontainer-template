@@ -1,6 +1,6 @@
 FROM node:22-bookworm-slim
 
-RUN apt update && apt install -y curl \
+RUN apt update && apt install -y curl jq \
     && rm -rf /var/lib/apt/lists/* 
 
 RUN curl -fsSL https://get.docker.com -o get-docker.sh \
