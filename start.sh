@@ -1,8 +1,12 @@
 #!/bin/bash
 
 cd /workspaces
-mkdir /workspaces/.vscode-cli || true
-mkdir /workspaces/.docker || true
+mkdir -p .vscode-cli .docker
+
+# Found this api when these CODER_AGENT_* env vars are not set and executing `./coder gitssh --`
+curl -s -H "Coder-Session-Token: $CODER_AGENT_TOKEN" ${CODER_AGENT_URL}api/v2/workspaceagents/me/gitsshkey \
+    | jq -r '.private_key' > ~/.ssh/id_ed25519 \
+    && chmod 600 ~/.ssh/id_ed25519
 
 dockerd --data-root /workspaces/.docker > /var/log/docker.log 2>&1 &
 sleep 2
@@ -18,7 +22,8 @@ node /scripts/forward-port.js ${CONFIG_PATH}
 devcontainer up ${DC_ARG_REBUILD} --workspace-folder=./code \
     --mount=type=bind,source=/tmp/code_x64,target=/usr/bin/code \
     --mount=type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
-    --mount=type=bind,source=/workspaces/.vscode-cli,target=/root/.vscode
+    --mount=type=bind,source=/workspaces/.vscode-cli,target=/root/.vscode \
+    --mount=type=bind,source=/root/.ssh/id_ed25519,target=/root/.ssh/id_ed25519
 
 mv ${CONFIG_PATH}.bak ${CONFIG_PATH}
 
