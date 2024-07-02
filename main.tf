@@ -111,7 +111,7 @@ resource "docker_container" "workspace" {
   count = data.coder_workspace.me.start_count
   # Find the latest version here:
   # https://github.com/coder/envbuilder/tags
-  image = "devc:latest"
+  image = "ghcr.io/inabhi9/coder-devcontainer:main"
   # Uses lower() to avoid Docker restriction on container names.
   name = "coder-${data.coder_workspace_owner.me.name}-${lower(data.coder_workspace.me.name)}"
   # Hostname makes the shell more user friendly: coder@my-workspace:~$
