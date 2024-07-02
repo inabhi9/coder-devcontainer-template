@@ -19,6 +19,13 @@ data "coder_workspace" "me" {
 }
 data "coder_workspace_owner" "me" {}
 
+variable "docker_config" {
+  type        = string
+  description = "Docker config. Typically contains registry credential and other information"
+  default     = ""
+  sensitive   = true
+}
+
 
 data "coder_parameter" "custom_repo_url" {
   name         = "custom_repo"
@@ -110,13 +117,13 @@ resource "docker_container" "workspace" {
   # Hostname makes the shell more user friendly: coder@my-workspace:~$
   hostname = data.coder_workspace.me.name
   # Use the docker gateway if the access URL is 127.0.0.1
-  # Running agent is needed for git pull hence reset of the startup items are moved to coder_agent > start.sh
   entrypoint = ["sh", "-c", replace(coder_agent.main.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
   env = [
     "CODER_AGENT_TOKEN=${coder_agent.main.token}",
     "GIT_URL=${data.coder_parameter.custom_repo_url.value}",
     "DC_ARG_REBUILD=${data.coder_parameter.force_rebuild.value ? "--remove-existing-container" : ""}",
-    "INIT_SCRIPT=${replace(coder_agent.main.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")}"
+    "INIT_SCRIPT=${replace(coder_agent.main.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")}",
+    "DOCKER_CONFIG=${var.docker_config}"
   ]
   host {
     host = "host.docker.internal"
