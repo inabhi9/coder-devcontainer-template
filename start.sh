@@ -8,7 +8,7 @@ curl -s -H "Coder-Session-Token: $CODER_AGENT_TOKEN" ${CODER_AGENT_URL}api/v2/wo
     | jq -r '.private_key' > ~/.ssh/id_ed25519 \
     && chmod 600 ~/.ssh/id_ed25519
 
-dockerd --data-root /workspaces/.docker > /var/log/docker.log 2>&1 &
+dockerd --data-root /workspaces/.docker > /var/log/dockerd.log 2>&1 &
 sleep 2
 
 if [ ! -d "./code" ] ; then
@@ -27,4 +27,4 @@ devcontainer up ${DC_ARG_REBUILD} --workspace-folder=./code \
 
 mv ${CONFIG_PATH}.bak ${CONFIG_PATH}
 
-devcontainer exec --workspace-folder=./code code serve-web --host 0.0.0.0 $@ --without-connection-token --accept-server-license-terms > /var/log/devc-web.log 2>&1 &
+devcontainer exec --workspace-folder=./code code serve-web --host 0.0.0.0 $@ --without-connection-token --accept-server-license-terms > /var/log/vscode-web.log 2>&1 &
