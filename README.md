@@ -11,9 +11,9 @@ Coder template to build and run devcontainer and make them available on MS VSCod
 
 ## Features
 
-- Fully support for devcontainer spec.
+- Fully supports devcontainer spec.
 - Git SSH auth with Coder's built-in ssh key management.
-- Docker config for authentication for private registry.
+- Docker config for authentication for private registries.
 - Port forwarding supported by Coder.
 
 ## How it works
