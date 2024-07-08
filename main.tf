@@ -17,7 +17,14 @@ provider "docker" {
 
 data "coder_workspace" "me" {
 }
+
 data "coder_workspace_owner" "me" {}
+
+locals {
+  coder_app_subdomain = false
+  coder_app_slug = "vscode-web"
+  vscode_server_base_path = local.coder_app_subdomain ? "/" : "/@${data.coder_workspace_owner.me.name}/${data.coder_workspace.me.name}/apps/${local.coder_app_slug}/"
+}
 
 variable "docker_config" {
   type        = string
@@ -51,7 +58,8 @@ resource "coder_agent" "main" {
   startup_script_behavior = "blocking"
   startup_script = <<EOF
   #!/bin/sh
-  bash /scripts/start.sh --port 13338
+  echo "access_path: ${local.vscode_server_base_path}"
+  bash /scripts/start.sh --port 13338 --server-base-path '${local.vscode_server_base_path}'
   EOF
 
   env = {
@@ -62,13 +70,13 @@ resource "coder_agent" "main" {
   }
 }
 
-resource "coder_app" "code-server" {
+resource "coder_app" "code_server" {
   agent_id     = coder_agent.main.id
-  slug         = "vscode-web"
+  slug         = local.coder_app_slug
   display_name = "VS Code Web"
   icon         = "/icon/code.svg"
-  url          = "http://localhost:13338?folder=/workspaces/code"
-  subdomain    = true  # VS Code Web does currently does not work with a subpath https://github.com/microsoft/vscode/issues/192947
+  url          = "http://localhost:13338${local.vscode_server_base_path}?folder=/workspaces/code"
+  subdomain    = local.coder_app_subdomain
   share        = "owner"
 
   healthcheck {
