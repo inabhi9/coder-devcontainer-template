@@ -131,7 +131,7 @@ resource "docker_container" "workspace" {
     "GIT_URL=${data.coder_parameter.custom_repo_url.value}",
     "DC_ARG_REBUILD=${data.coder_parameter.force_rebuild.value ? "--remove-existing-container" : ""}",
     "INIT_SCRIPT=${replace(coder_agent.main.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")}",
-    "DOCKER_CONFIG=${var.docker_config}"
+    "DOCKER_CONFIG_JSON=${var.docker_config}"
   ]
   host {
     host = "host.docker.internal"
