@@ -1,7 +1,7 @@
 FROM node:22-bookworm-slim
 
-RUN apt update && apt install -y curl jq \
-    && rm -rf /var/lib/apt/lists/* 
+RUN apt update && apt install -y curl jq sudo \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://get.docker.com -o get-docker.sh \
     && sh get-docker.sh
@@ -15,8 +15,13 @@ RUN npm install -g @devcontainers/cli json5
 
 ENV NODE_PATH=/usr/local/lib/node_modules
 
-RUN printf "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
 COPY start.sh /scripts/start.sh
 COPY forward-port.js /scripts/forward-port.js
 
-RUN mkdir /workspaces
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN adduser coder && usermod -aG docker,sudo coder
+
+USER coder
+
+WORKDIR /workspaces
+RUN mkdir -p ~/.ssh && printf "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
