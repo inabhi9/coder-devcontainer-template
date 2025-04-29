@@ -11,7 +11,7 @@ RUN curl -Lk 'https://code.visualstudio.com/sha/download?build=stable&os=cli-alp
     && mv /tmp/code /tmp/code_x64 \
     && rm -fr /tmp/vscode_cli.tar.gz
 
-RUN npm install -g @devcontainers/cli json5
+RUN npm install -g @devcontainers/cli json5 yaml
 
 ENV NODE_PATH=/usr/local/lib/node_modules
 
