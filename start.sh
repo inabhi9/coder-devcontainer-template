@@ -23,7 +23,7 @@ node /scripts/forward-port.js ${CONFIG_PATH}
 devcontainer up ${DC_ARG_REBUILD} --workspace-folder=./code \
     --mount=type=bind,source=/tmp/code_x64,target=/usr/bin/code \
     --mount=type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
-    --mount=type=bind,source=/workspaces/.vscode,target=/workspaces/.vscode \
+    --mount=type=bind,source=/workspaces,target=/workspaces \
     --mount=type=bind,source=$HOME/.ssh,target=/tmp/.ssh
 
 mv ${CONFIG_PATH}.bak ${CONFIG_PATH}
