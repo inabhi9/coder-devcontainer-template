@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo apt install -y socat
 
 mkdir -p $HOME/.vscode $HOME/.docker/data ~/.ssh ~/.logs
 
@@ -16,20 +17,23 @@ if [ ! -d "$HOME/code" ] ; then
     git clone ${GIT_URL} $HOME/code
 fi
 
-CONFIG_PATH=$HOME/code/.devcontainer/devcontainer.json
-cp ${CONFIG_PATH} ${CONFIG_PATH}.bak
-node /scripts/forward-port.js ${CONFIG_PATH}
-
-devcontainer up ${DC_ARG_REBUILD} --workspace-folder=$HOME/code \
+DEVC_OUTPUT=$(devcontainer up ${DC_ARG_REBUILD} --workspace-folder=$HOME/code \
     --mount=type=bind,source=/tmp/code_x64,target=/usr/bin/code \
     --mount=type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --mount=type=bind,source=$HOME/.vscode,target=/workspaces/.vscode \
     --mount=type=bind,source=$HOME/.ssh,target=/tmp/.ssh \
-    --mount=type=bind,source=$HOME/.gitconfig,target=/etc/gitconfig
+    --mount=type=bind,source=$HOME/.gitconfig,target=/etc/gitconfig)
 
 sleep 1
+echo $DEVC_OUTPUT
+
+# Proxy to the vscode
+CONTAINER_ID=$(echo $DEVC_OUTPUT | jq -r .containerId)
+echo 'container id'
+echo $CONTAINER_ID
+CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER_ID)
+nohup socat TCP-LISTEN:13338,fork,reuseaddr TCP:$CONTAINER_IP:13338 > /dev/null 2>&1 &
 echo "Devcontainer up successful"
-mv ${CONFIG_PATH}.bak ${CONFIG_PATH}
 
 devcontainer exec --workspace-folder=$HOME/code bash -c 'ln -fs /workspaces/.vscode $HOME/ && ln -fs /tmp/.ssh $HOME/'
 devcontainer exec --workspace-folder=$HOME/code bash -c 'chown $(whoami) -R $HOME/.ssh'
