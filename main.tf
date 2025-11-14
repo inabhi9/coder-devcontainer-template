@@ -2,6 +2,7 @@ terraform {
   required_providers {
     coder = {
       source = "coder/coder"
+      version = ">=2.4.0"
     }
     docker = {
       source = "kreuzwerker/docker"
@@ -38,9 +39,8 @@ data "coder_parameter" "custom_repo_url" {
   name         = "custom_repo"
   display_name = "Repository URL"
   order        = 2
-  default      = ""
   description  = "Repository URL, see [awesome-devcontainers](https://github.com/manekinekko/awesome-devcontainers)."
-  mutable      = false
+  mutable      = true
 }
 
 data "coder_parameter" "force_rebuild" {
@@ -58,6 +58,8 @@ resource "coder_agent" "main" {
   startup_script_behavior = "blocking"
   startup_script = <<EOF
   #!/bin/sh
+  git config --global user.name "${data.coder_workspace_owner.me.name}"
+  git config --global user.email "${data.coder_workspace_owner.me.email}"
   echo "access_path: ${local.vscode_server_base_path}"
   bash /scripts/start.sh --port 13338 --server-base-path '${local.vscode_server_base_path}'
   EOF
@@ -75,12 +77,12 @@ resource "coder_app" "code_server" {
   slug         = local.coder_app_slug
   display_name = "VS Code Web"
   icon         = "/icon/code.svg"
-  url          = "http://localhost:13338${local.vscode_server_base_path}?folder=/workspaces/code"
+  url          = "http://127.0.0.1:13338${local.vscode_server_base_path}?folder=/workspaces/code"
   subdomain    = local.coder_app_subdomain
   share        = "owner"
 
   healthcheck {
-    url       = "http://localhost:13338/healthz"
+    url       = "http://127.0.0.1:13338/healthz"
     interval  = 2
     threshold = 100
   }
@@ -138,10 +140,11 @@ resource "docker_container" "workspace" {
     ip   = "host-gateway"
   }
   volumes {
-    container_path = "/workspaces"
+    container_path = "/home/coder"
     volume_name    = docker_volume.workspaces.name
     read_only      = false
   }
+
   # Add labels in Docker to keep track of orphan resources.
   labels {
     label = "coder.owner"

@@ -24,7 +24,8 @@ devcontainer up ${DC_ARG_REBUILD} --workspace-folder=$HOME/code \
     --mount=type=bind,source=/tmp/code_x64,target=/usr/bin/code \
     --mount=type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --mount=type=bind,source=$HOME/.vscode,target=/workspaces/.vscode \
-    --mount=type=bind,source=$HOME/.ssh,target=/tmp/.ssh
+    --mount=type=bind,source=$HOME/.ssh,target=/tmp/.ssh \
+    --mount=type=bind,source=$HOME/.gitconfig,target=/etc/gitconfig
 
 sleep 1
 echo "Devcontainer up successful"
