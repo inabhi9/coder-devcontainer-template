@@ -10,6 +10,5 @@ RUN sudo npm install -g @devcontainers/cli json5 yaml
 ENV NODE_PATH=/usr/lib/node_modules
 
 COPY start.sh /scripts/start.sh
-COPY forward-port.js /scripts/forward-port.js
 
 RUN mkdir -p ~/.ssh && printf "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
