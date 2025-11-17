@@ -24,7 +24,9 @@ DEVC_OUTPUT=$(devcontainer up ${DC_ARG_REBUILD} $DEVC_CONF_OVERRIDE --workspace-
     --mount=type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --mount=type=bind,source=$HOME/.vscode,target=/workspaces/.vscode \
     --mount=type=bind,source=$HOME/.ssh,target=/tmp/.ssh \
-    --mount=type=bind,source=$HOME/.gitconfig,target=/etc/gitconfig)
+    --mount=type=bind,source=$HOME/.gitconfig,target=/etc/gitconfig \
+    --mount=type=bind,source=/tmp/devcontainer_repo,target=/workspaces/devcontainer) \
+    
 
 sleep 1
 echo $DEVC_OUTPUT
