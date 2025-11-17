@@ -37,6 +37,6 @@ CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress
 nohup socat TCP-LISTEN:13338,fork,reuseaddr TCP:$CONTAINER_IP:13338 > /dev/null 2>&1 &
 echo "Devcontainer up successful"
 
-devcontainer exec --workspace-folder=$HOME/code bash -c 'ln -fs /workspaces/.vscode $HOME/ && ln -fs /tmp/.ssh $HOME/'
-devcontainer exec --workspace-folder=$HOME/code bash -c 'chown $(whoami) -R $HOME/.ssh'
-devcontainer exec --workspace-folder=$HOME/code code serve-web --host 0.0.0.0 $@ --server-data-dir /workspaces/.vscode/server --without-connection-token --accept-server-license-terms > ~/.logs/vscode-web.log 2>&1 &
+devcontainer exec --workspace-folder=$HOME/code $DEVC_CONF_OVERRIDE bash -c 'ln -fs /workspaces/.vscode $HOME/ && ln -fs /tmp/.ssh $HOME/'
+devcontainer exec --workspace-folder=$HOME/code $DEVC_CONF_OVERRIDE bash -c 'chown $(whoami) -R $HOME/.ssh'
+devcontainer exec --workspace-folder=$HOME/code $DEVC_CONF_OVERRIDE code serve-web --host 0.0.0.0 $@ --server-data-dir /workspaces/.vscode/server --without-connection-token --accept-server-license-terms > ~/.logs/vscode-web.log 2>&1 &
