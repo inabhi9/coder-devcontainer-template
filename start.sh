@@ -13,10 +13,6 @@ echo $DOCKER_CONFIG_JSON > $HOME/.docker/config.json
 sudo dockerd --data-root $HOME/.docker/data > ~/.logs/dockerd.log 2>&1 &
 sleep 2
 
-if [ ! -d "$HOME/code" ] ; then
-     clone ${GIT_URL} $HOME/code
-fi
-
 DEVC_OUTPUT=$(devcontainer up ${DC_ARG_REBUILD} --workspace-folder=$HOME/code \
     --mount=type=bind,source=/tmp/code_x64,target=/usr/bin/code \
     --mount=type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
