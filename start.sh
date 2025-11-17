@@ -14,10 +14,12 @@ sudo dockerd --data-root $HOME/.docker/data > ~/.logs/dockerd.log 2>&1 &
 sleep 2
 
 if [ ! -d "$HOME/code" ] ; then
-    git clone ${GIT_URL} $HOME/code
+     clone ${GIT_URL} $HOME/code
 fi
 
-DEVC_OUTPUT=$(devcontainer up ${DC_ARG_REBUILD} --workspace-folder=$HOME/code \
+DEVC_CONF=/tmp/devcontainer_repo/.devcontainer/devcontainer.json
+DEVC_CONF_OVERRIDE=$(if [ -f $DEVC_CONF ]; then echo "--override-config $DEVC_CONF"; fi)
+DEVC_OUTPUT=$(devcontainer up ${DC_ARG_REBUILD} $DEVC_CONF_OVERRIDE --workspace-folder=$HOME/code \
     --mount=type=bind,source=/tmp/code_x64,target=/usr/bin/code \
     --mount=type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --mount=type=bind,source=$HOME/.vscode,target=/workspaces/.vscode \
